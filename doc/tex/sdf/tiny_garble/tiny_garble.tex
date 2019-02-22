@@ -11,8 +11,6 @@
 \end{tabular}
 \end{tcolorbox}
 
-
-
 This subsection will cover the installation and usage of TinyGarble, a GC framework that allows two parties to safely compute any function with their private inputs through Yao's Garbled Circuit Potocol. It accepts HDL and C/C++ as user inputs, although HDL will be the primary focus.
 
 \subsection{Installation}
@@ -384,7 +382,7 @@ endmodule
 \end{lstlisting}
 
 \newpage
-Since the garblers and evaluator inputs have 32 bits, and TinyGarble inputs are in hexadecimals, the inputs have to be written together, and values between 0 and 9999 are accepted. Also, the sums will be made in hexadecimal even if the input is in decimal, but it should not affect anything.
+Since the garblers and evaluator inputs have 32 bits, values between 0 and 9999 are accepted. The sums will be made in hexadecimal even if the input is intented to be decimal, but the output should not be affected.
 
 Examples:
 
@@ -409,25 +407,19 @@ Examples:
 \newpage
 \subsubsection{TinyGarble Interface}
 
-To ease the computation of the moda function between Alice and Bob, the interface 'STPC' was made. It can be found at sdf/tiny\_garble/STPC zip, which containts a folder with the src files, and the folder with the build project. The interface was made with QTCreator, so in case any changes have to be made to the interface itself or to the c++ files, it has to be installed to be able to build the project (Since it needs QT libraries). QtCreator can be installed with 'sudo apt install qtcreator'. To open a project, select the .pro file on th src folder.
-After opening the project, the work and build folder can be (and should) configured in 'Projects'.
-To build the project without QtCreator, the following commands have to be executed:
+To ease the computation of the moda function between Alice and Bob, the interface 'STPC' was made. It can be found at sdf/tiny\_garble/STPC zip, which containts a folder with the src files, and the folder with the built project. The interface was made with QTCreator, which contains the libraries required for the interface and sockets, so in case any changes have to be made to the interface itself or to the c++ files, it has to be installed. QTCreator 5.11.3 was used, and installed with the '.run' file downloaded at QT's website.
+After opening the project with the '.pro' file located at the work folder, this one and the build folder can be configured in 'Projects', which are in this case STCP-src and STPC-gui, respectively.
 
-\begin{lstlisting}[caption={Manually building QT application}, language=bash, captionpos=b]
-$ export PATH=/pathToQt/version/Gcc/bin:$PATH
-$ qmake
-$ make
+In order to make the app usable in any linux system, \url{https://github.com/probonopd/linuxdeployqt} was used, more specifically the linuxdeployqt-5-x86\_64.AppImage file, that can be found at the Git's Releases tab. It essentialy creates a bundle with all the libraries and other necessary files to execute the app.
+
+\begin{lstlisting}[caption={Deploying QT application. Executable in this case is at STPC-gui/STPC}, language=bash, captionpos=b]
+$ export PATH=/[pathToQt]/[version]/gcc/bin:$PATH
+$ chmod a+x linuxdeployqt-5-x86_64.AppImage-x86_64.AppImage
+$ ./linuxdeployqt-5-x86_64.AppImage-x86_64.AppImage [PathToExecutable]
 \end{lstlisting}
 
-Building the project should generate some files and folders on the build folder configured at QtCreator, or in the same folder where the src code is, in case it was built manually. 
-In order to make the app usable in any linux system, \url{https://github.com/probonopd/linuxdeployqt} was used. It essentialy creates a bundle with all the libraries and other necessary files to execute the app. To install it follow it's git Installation instructions. 
-
-\begin{lstlisting}[caption={Deploying QT application}, language=bash, captionpos=b]
-$ ./linuxdeployqt-x86_64.AppImage [pathToBuiltProject]
-\end{lstlisting}
-
-If no error ocurred, one should be able to go to the folder where the build project is, and run the app with './app', in this case './STPC'.
-When openning the interface, the user has to insert the path to TinyGarble, and the path to the folder containing the 'moda.scd' file, before choosing which host he will be (Alice or Bob).
+If no error ocurred, one should be able to go to the folder where the built project is, and run the executable, in this case './STPC'.
+When opening the interface, the user has to insert the path to TinyGarble, and the path to the folder containing the 'moda.scd' file, before choosing which host he will be (Alice or Bob).
 
 \begin{figure}[H]
 	\centering
@@ -437,15 +429,13 @@ When openning the interface, the user has to insert the path to TinyGarble, and 
 
 If Alice was selected, the user will have to insert the PORT for TinyGarble's connection, and the IP Adress of the Key provider and the respective PORT for the connection.
 
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.8\textwidth, height=6cm]{./sdf/tiny_garble/figures/STPC_alice.png}
     \caption{Alice network configuration.}\label{fig:STPC_alice}
 \end{figure}
 
-In case of Bob, only the IP Adress of Alice and the respective PORT are needed.
-
+For Bob, only the IP Adress of Alice and the respective PORT are needed.
 
 \begin{figure}[H]
 	\centering
@@ -464,7 +454,7 @@ The blue frame shows warnings and information about the connection and current s
 
 \subsubsection{Server to provide Keys}
 
-This next program, 'key\_server', is a TCP server that provides a random number in binary with N bits, when receiving an 'N' from a client. It will respond with a error message in N is not a number.
+This next program, 'key\_server', is a TCP server that provides a random number in binary with N bits, when receiving an 'N' from a client. It will respond with a error message if N is not a number.
 It is used in the Interface showed above, to retrieve the Key for Alice. Each time a computation is accepted by any of the hosts, Alice will connect to the key provider, send a message 'N', and receive the random number that can then be used as the Key to generate the Garbled Circuit.
 Qt network libraries were used, so Qt will need to be installed, and the app can be built and deployed the same way the interface app is.
 
